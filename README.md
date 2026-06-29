@@ -1,1 +1,1 @@
-# AI-Assisted-Threat-Detection-Dashboard-Group-2
+# AI-Assisted-Threat-Detection-Dashboard
