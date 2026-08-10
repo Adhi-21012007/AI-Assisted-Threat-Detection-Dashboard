@@ -35,20 +35,25 @@
                 <i class="fa-solid fa-house"></i>
                 <span>Dashboard</span>
             </li>
-
             <li>
-                <i class="fa-solid fa-user"></i>
-                <span>Profile</span>
+                <a href = "{{ url_for('users.view_profile') }}">
+                    <i class="fa-solid fa-user"></i>
+                    <span>Profile</span>
+                </a>
             </li>
 
             <li>
-                <i class="fa-solid fa-calendar"></i>
-                <span>Attendance</span>
+                <a href = "{{url_for('users.attendance_form')}}">
+                    <i class="fa-solid fa-calendar"></i>
+                    <span>Attendance</span>
+                </a>
             </li>
 
             <li>
+                <a href =" {{url_for('users.leave')}}">
                 <i class="fa-solid fa-file-lines"></i>
                 <span>Leave</span>
+                </a>
             </li>
 
             <li>

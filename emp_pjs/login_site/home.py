@@ -17,4 +17,4 @@ def login_page():
 
         user_details.append(user)
         return redirect(url_for('users.dash_page'))
-    return render_template('index.html')
+    return render_template('login.html')

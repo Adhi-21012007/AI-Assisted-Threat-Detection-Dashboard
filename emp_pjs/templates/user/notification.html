@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Notifications</title>
+
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+</head>
+
+<body>
+
+    <div class="container">
+
+        <!-- Page Header -->
+
+        <header>
+
+            <h1>Notifications</h1>
+
+            <p>Latest notifications from the administrator</p>
+
+        </header>
+
+        <!-- Search -->
+
+        <div class="search-box">
+
+            <input
+                type="text"
+                placeholder="Search Notification...">
+
+        </div>
+
+        <!-- Notification List -->
+
+        <section class="notification-list">
+
+            <!-- Notification 1 -->
+
+            <div class="notification-card unread">
+
+                <div class="icon">
+
+                    <i class="fa-solid fa-bullhorn"></i>
+
+                </div>
+
+                <div class="content">
+
+                    <h3>{{ title }}</h3>
+
+                    <p>{{ message }}</p>
+
+                    <small>{{ date }} | {{ time }}</small>
+
+                </div>
+
+                <div class="status">
+
+                    <button>
+
+                        Mark as Read
+
+                    </button>
+
+                </div>
+
+            </div>
+
+            <!-- Notification 2 -->
+
+            <div class="notification-card">
+
+                <div class="icon">
+
+                    <i class="fa-solid fa-calendar-check"></i>
+
+                </div>
+
+                <div class="content">
+
+                    <h3>{{ title }}</h3>
+
+                    <p>{{ message }}</p>
+
+                    <small>{{ date }} | {{ time }}</small>
+
+                </div>
+
+                <div class="status">
+
+                    <span>Read</span>
+
+                </div>
+
+            </div>
+
+            <!-- Notification 3 -->
+
+            <div class="notification-card">
+
+                <div class="icon">
+
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+
+                </div>
+
+                <div class="content">
+
+                    <h3>{{ title }}</h3>
+
+                    <p>{{ message }}</p>
+
+                    <small>{{ date }} | {{ time }}</small>
+
+                </div>
+
+                <div class="status">
+
+                    <span>Read</span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- Pagination -->
+
+        <footer>
+
+            <button>Previous</button>
+
+            <button>Next</button>
+
+        </footer>
+
+    </div>
+
+</body>
+
+</html>
