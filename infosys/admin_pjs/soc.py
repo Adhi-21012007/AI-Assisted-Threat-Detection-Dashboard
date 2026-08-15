@@ -6,13 +6,14 @@ import secrets
 from datetime import datetime, timedelta, timezone
 from functools import wraps
 from flask import Blueprint, abort, current_app, flash, redirect, render_template, request, session, url_for
-from security_pjs.dashboard_data import add_tool_record, analytics, agent_answer, api_metrics, event_detail, forensic_case, get_events, ip_statistics, recommendations, record_action, summary, tool_records
+from security_pjs.dashboard_data import add_tool_record, analytics, agent_answer, api_metrics, event_detail, forensic_case, get_events, incidents, intelligence_records, ip_statistics, recommendations, record_action, summary, tool_records
+from security_pjs.intelligence import analyse_email, analyse_image, analyse_ip, analyse_pcap, analyse_qr, analyse_url, copilot_answer, generate_report, parse_nmap_xml, persist_finding
 from security_pjs.event_normalizer import normalize_event
 from security_pjs.event_processor import process_event
 
 soc=Blueprint('soc',__name__,url_prefix='/security-operations')
 PAGES={
- 'dashboard':'Dashboard','analytics':'Analytics','ai_summary':'AI Summary','recommendations':'AI Recommendations','agent':'AI Security Agent','static_data':'Static Data','live_api':'Live API','rest_api':'REST API','ip_intelligence':'IP Intelligence','network_intelligence':'Network Intelligence','statistics':'Statistics','active_threats':'Active Threats','investigations':'Threat Investigation','mitigation':'Risk Mitigation','siem':'SIEM & Monitoring','events':'Security Events','vulnerabilities':'Vulnerability Assessment','pentesting':'Penetration Testing','web_security':'Web Application Security','forensics':'Digital Forensics','api_keys':'API Keys','settings':'Settings'}
+ 'dashboard':'Dashboard','analytics':'Analytics','ai_summary':'AI Summary','recommendations':'AI Recommendations','agent':'AI Security Agent','copilot':'AI Security Copilot','url_analysis':'URL Analysis','email_security':'Email Security','image_phishing':'Image Phishing','qr_security':'QR Security','virustotal':'VirusTotal Intelligence','nmap':'Nmap Analysis','wireshark':'Wireshark Analysis','reports':'Security Reports','static_data':'Static Data','live_api':'Live API','rest_api':'REST API','ip_intelligence':'IP Intelligence','network_intelligence':'Network Intelligence','statistics':'Statistics','active_threats':'Active Threats','investigations':'Threat Investigation','mitigation':'Risk Mitigation','siem':'SIEM & Monitoring','events':'Security Events','vulnerabilities':'Vulnerability Assessment','pentesting':'Penetration Testing','web_security':'Web Application Security','forensics':'Digital Forensics','api_keys':'API Keys','settings':'Settings'}
 
 def admin_required(view):
     @wraps(view)
@@ -33,7 +34,7 @@ def _render(page, **extra):
     path=current_app.config['DATABASE'];filters=_filters();data=analytics(path,filters);events=get_events(path,filters,'EVENT',250);alerts=get_events(path,filters,'ALERT',250)
     choices={'employees':sorted({x.get('employee_id') for x in events if x.get('employee_id')}),'departments':sorted({x.get('department') for x in events if x.get('department')}),'teams':sorted({x.get('team_name') for x in events if x.get('team_name')}),'attacks':sorted(set(data['attacks']))}
     tool_type={'vulnerabilities':'VULNERABILITY','pentesting':'PENTEST'}.get(page)
-    return render_template('soc/page.html',page=page,page_title=PAGES[page],filters=filters,data=data,events=events,alerts=alerts,recommendations=recommendations(path,filters),summary_text=summary(path,filters),ips=ip_statistics(path),choices=choices,tool_records=tool_records(path,tool_type,filters) if tool_type else [],api_metrics=api_metrics(path),csrf_token=session.setdefault('soc_csrf',secrets.token_urlsafe(32)),now=datetime.now(timezone.utc).isoformat(),**extra)
+    return render_template('soc/page.html',page=page,page_title=PAGES[page],filters=filters,data=data,events=events,alerts=alerts,recommendations=recommendations(path,filters),summary_text=summary(path,filters),ips=ip_statistics(path),choices=choices,tool_records=tool_records(path,tool_type,filters) if tool_type else [],intelligence_records=intelligence_records(path),incidents=incidents(path),api_metrics=api_metrics(path),csrf_token=session.setdefault('soc_csrf',secrets.token_urlsafe(32)),now=datetime.now(timezone.utc).isoformat(),**extra)
 
 @soc.route('/')
 @admin_required
@@ -52,6 +53,82 @@ def ai_recommendations():return _render('recommendations')
 def ai_agent():
     question=request.form.get('question','') if request.method=='POST' else request.args.get('question','');answer=agent_answer(current_app.config['DATABASE'],question) if question else None
     return _render('agent',question=question,answer=answer)
+@soc.route('/ai-copilot',methods=['GET','POST'])
+@admin_required
+def copilot():
+    question=request.form.get('question','') if request.method=='POST' else ''
+    answer=copilot_answer(current_app.config['DATABASE'],question,agent_answer(current_app.config['DATABASE'],question)) if question else None
+    return _render('copilot',question=question,answer=answer)
+def _persist_analysis(page, finding_type, source, result, ip_address=None):
+    stored=persist_finding(current_app.config['DATABASE'],finding_type,source,result,session['admin_id'],ip_address=ip_address)
+    flash(f"{page} saved as security event {stored['event_id']}"+(f" and correlated incident #{stored['incident_id']}." if stored['incident_id'] else '.'),'success')
+    return stored
+@soc.route('/url-analysis',methods=['GET','POST'])
+@admin_required
+def url_analysis():
+    result=None
+    if request.method=='POST':
+        try: result=analyse_url(request.form.get('url'));_persist_analysis('URL local analysis','URL_ANALYSIS','URL_ANALYZER',result)
+        except ValueError as exc: flash(str(exc),'error')
+    return _render('url_analysis',result=result)
+@soc.route('/email-security',methods=['GET','POST'])
+@admin_required
+def email_security():
+    result=None
+    if request.method=='POST':
+        try:
+            result=analyse_email(request.form.get('subject'),request.form.get('sender'),request.form.get('recipient'),request.form.get('body'),request.form.get('headers'),current_app.config['DATABASE']);_persist_analysis('Email local analysis','EMAIL_ANALYSIS','EMAIL_ANALYZER',result)
+        except ValueError as exc: flash(str(exc),'error')
+    return _render('email_security',result=result)
+def _uploaded_analysis(page, finding_type, source, analyzer):
+    result=None
+    if request.method=='POST':
+        upload=request.files.get('analysis_file')
+        try:
+            if not upload or not upload.filename: raise ValueError('Select a file to analyse.')
+            result=analyzer(upload.read(3*1024*1024+1),secure_filename(upload.filename));_persist_analysis(page,finding_type,source,result)
+        except ValueError as exc: flash(str(exc),'error')
+    return _render(page,result=result)
+@soc.route('/image-phishing',methods=['GET','POST'])
+@admin_required
+def image_phishing(): return _uploaded_analysis('image_phishing','IMAGE_ANALYSIS','IMAGE_ANALYZER',analyse_image)
+@soc.route('/qr-security',methods=['GET','POST'])
+@admin_required
+def qr_security(): return _uploaded_analysis('qr_security','QR_ANALYSIS','QR_ANALYZER',analyse_qr)
+@soc.route('/nmap-analysis',methods=['GET','POST'])
+@admin_required
+def nmap(): return _uploaded_analysis('nmap','NMAP','NMAP_IMPORTED_XML',lambda data,name:parse_nmap_xml(data))
+@soc.route('/wireshark-analysis',methods=['GET','POST'])
+@admin_required
+def wireshark(): return _uploaded_analysis('wireshark','WIRESHARK','UPLOADED_PACKET_CAPTURE',lambda data,name:analyse_pcap(data))
+@soc.route('/ip-intelligence',methods=['GET','POST'])
+@admin_required
+def ip_intelligence():
+    result=None
+    if request.method=='POST':
+        try:
+            result=analyse_ip(request.form.get('ip_address'),current_app.config['DATABASE']);_persist_analysis('IP local analysis','IP_INTELLIGENCE','IP_INTELLIGENCE',result,ip_address=result['target'])
+        except ValueError as exc: flash(str(exc),'error')
+    return _render('ip_intelligence',result=result)
+@soc.route('/virustotal-intelligence',methods=['GET','POST'])
+@admin_required
+def virustotal():
+    result=None
+    if request.method=='POST':
+        value=request.form.get('target','').strip()
+        try:
+            result=analyse_url(value,external=True) if value.startswith(('http://','https://')) else analyse_ip(value,current_app.config['DATABASE'],external=True)
+            _persist_analysis('Threat-intelligence lookup','VIRUSTOTAL','VIRUSTOTAL',result,ip_address=result['target'] if result.get('ip_type') else None)
+        except ValueError as exc: flash('Enter a valid URL or IP address.','error')
+    return _render('virustotal',result=result)
+@soc.route('/reports',methods=['GET','POST'])
+@admin_required
+def reports():
+    report=None
+    if request.method=='POST':
+        try: report=generate_report(current_app.config['DATABASE'],request.form.get('report_type','Threat Report'),int(request.form['security_event_id']),session['admin_id']);flash('Database-backed security report generated.','success')
+        except (ValueError,KeyError): flash('Select a valid security event.','error')
+    return _render('reports',report=report)
 @soc.route('/active-threats')
 @admin_required
 def active_threats():return _render('active_threats')
@@ -79,9 +156,6 @@ def siem():return _render('siem')
 @soc.route('/security-events')
 @admin_required
 def events():return _render('events')
-@soc.route('/ip-intelligence')
-@admin_required
-def ip_intelligence():return _render('ip_intelligence')
 @soc.route('/live-api')
 @admin_required
 def live_api():return _render('live_api')
@@ -98,14 +172,20 @@ def network_intelligence():return _render('network_intelligence')
 @admin_required
 def vulnerabilities():
     if request.method=='POST':
-        try:add_tool_record(current_app.config['DATABASE'],'VULNERABILITY',request.form);flash('Vulnerability record saved.','success')
+        try:
+            add_tool_record(current_app.config['DATABASE'],'VULNERABILITY',request.form)
+            risk=int(request.form.get('risk_score') or 0);result={'target':request.form.get('asset'),'risk_score':risk,'severity':request.form.get('severity','LOW'),'classification':request.form.get('title'),'recommendation':request.form.get('recommendation') or 'Review and remediate the recorded vulnerability.','indicators':[request.form.get('description') or 'Manual analyst finding.'],'reasons':['Manual assessment record.'],'confidence':1.0,'analysis_mode':request.form.get('source','MANUAL ENTRY')}
+            _persist_analysis('Vulnerability finding','VULNERABILITY_ASSESSMENT',request.form.get('source','MANUAL'),result);flash('Vulnerability record saved and linked to the security-event workflow.','success')
         except ValueError as exc:flash(str(exc),'error')
     return _render('vulnerabilities')
 @soc.route('/penetration-testing',methods=['GET','POST'])
 @admin_required
 def pentesting():
     if request.method=='POST':
-        try:add_tool_record(current_app.config['DATABASE'],'PENTEST',request.form);flash('Authorized test record saved.','success')
+        try:
+            add_tool_record(current_app.config['DATABASE'],'PENTEST',request.form)
+            risk=int(request.form.get('risk_score') or 0);result={'target':request.form.get('asset'),'risk_score':risk,'severity':request.form.get('severity','LOW'),'classification':request.form.get('title'),'recommendation':request.form.get('recommendation') or 'Review the approved test finding.','indicators':[request.form.get('description') or 'Manual authorised test finding.'],'reasons':['Test source: '+request.form.get('source','MANUAL ENTRY')],'confidence':1.0,'analysis_mode':request.form.get('source','MANUAL ENTRY')}
+            _persist_analysis('Penetration-test finding','PENTEST',request.form.get('source','MANUAL'),result);flash('Authorized test record saved and linked to the security-event workflow.','success')
         except ValueError as exc:flash(str(exc),'error')
     return _render('pentesting')
 @soc.route('/web-application-security')

@@ -52,7 +52,25 @@ python -m security_pjs.reconcile_ai_results company.db
 python -m security_pjs.validate_security_data company.db
 ```
 
-External threat intelligence, SIEM, GCP, vulnerability scanners, and penetration-testing scanners remain explicitly **Not Connected**. Their SOC pages do not fabricate external findings.
+## Security intelligence extensions
+
+The SOC now includes URL, IP, email, image-phishing, QR, VirusTotal, imported-Nmap, uploaded-PCAP/Wireshark, AI Copilot, incident correlation, and report workflows. Every saved analysis becomes a normalized shared `security_events` record with an explainable risk score and, for significant correlated signals, a linked incident. It can then be investigated, mitigated, resolved, or marked **FALSE POSITIVE** using the existing lifecycle.
+
+- **URL/IP/email** analysis is local and explainable. A VirusTotal result appears only when `VIRUSTOTAL_API_KEY` is set; otherwise the page explicitly reports that external intelligence is unavailable.
+- **Image OCR**, **QR decoding**, and **PCAP parsing** are optional/local. Unsupported files and unavailable optional libraries return an honest unavailable state; uploaded source files are not modified or executed.
+- **Nmap** accepts only analyst-uploaded, authorised Nmap XML output. The application never starts an arbitrary target scan.
+- **AI Security Copilot** falls back to the controlled database-grounded Security Agent unless a `GROQ_API_KEY` is configured. It is advisory and cannot replace deterministic detection results.
+- **Vulnerability** and **pentest** records support lifecycle states and are linked into the same event flow as manual, authorised evidence—not represented as live scans.
+
+Configure optional keys in deployment secrets or local environment variables, never in source code. See [deploy/.env.example](C:/Users/keesh/OneDrive/ドキュメント/ChatGPT/infosys/deploy/.env.example).
+
+To use the separate UNSW-NB15 network-traffic research model with an approved labelled CSV, see [model_pjs/network_ml/README.md](C:/Users/keesh/OneDrive/ドキュメント/ChatGPT/infosys/model_pjs/network_ml/README.md). It is deliberately kept separate from the existing employee-behaviour Random Forest and Isolation Forest; no network-model result is claimed until an actual dataset has been supplied and trained.
+
+Run the full checks after changes:
+
+```powershell
+python -m unittest security_pjs.tests.test_pipeline security_pjs.tests.test_dashboard_data security_pjs.tests.test_reconciliation_tools security_pjs.tests.test_intelligence -v
+```
 
 ## GCP readiness
 
