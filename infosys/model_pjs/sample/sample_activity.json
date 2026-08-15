@@ -1,0 +1,14 @@
+{
+  "user_id": "EMP001",
+  "user_role": "Employee",
+  "department": "Technology",
+  "team": "Product Engineering",
+  "hour": 22,
+  "login_count": 8,
+  "failed_login_count": 4,
+  "unique_ip_count": 3,
+  "new_ip_indicator": 1,
+  "activity_spike": 1,
+  "activities_per_hour": 25,
+  "source": "Employee Portal"
+}

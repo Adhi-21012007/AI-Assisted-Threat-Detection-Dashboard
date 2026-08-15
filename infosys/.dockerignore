@@ -1,0 +1,9 @@
+.git
+.agents
+.codex
+**/__pycache__
+**/*.pyc
+shared_uploads/*
+!shared_uploads/.gitkeep
+admin_pjs/database.db
+emp_pjs/database.db
