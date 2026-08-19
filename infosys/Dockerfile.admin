@@ -1,0 +1,10 @@
+FROM python:3.11-slim
+WORKDIR /app
+ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 PORT=8080
+COPY admin_pjs/requirements.txt admin_pjs/requirements.txt
+COPY model_pjs/requirements.txt model_pjs/requirements.txt
+RUN pip install --no-cache-dir -r admin_pjs/requirements.txt
+COPY . /app
+RUN mkdir -p /tmp/uploads
+ENV COMPANY_DATABASE_PATH=/tmp/company.db UPLOAD_FOLDER=/tmp/uploads
+CMD ["sh", "-c", "gunicorn --chdir admin_pjs --bind 0.0.0.0:${PORT} --workers 1 --threads 4 --timeout 120 app:app"]

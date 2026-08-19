@@ -1,0 +1,121 @@
+[
+  {
+    "test_case": "Normal employee login",
+    "event_id": "fbc48995-6a8f-428f-bcee-a6c12b7e1c3d",
+    "user_id": "EMP001",
+    "timestamp": "2026-08-14T12:59:05.060695+00:00",
+    "prediction": "Normal",
+    "threat_type": "Normal Behaviour",
+    "confidence": 0.851,
+    "risk_score": 22,
+    "severity": "Low",
+    "reasons": [
+      "Behaviour is consistent with the learned normal baseline"
+    ],
+    "source": "Activity Provider",
+    "processed_at": "2026-08-14T12:59:05.060695+00:00",
+    "anomaly_detected": false
+  },
+  {
+    "test_case": "Three failed logins",
+    "event_id": "c34dc985-d0d5-4fd7-a8b0-87d0ed26f4db",
+    "user_id": "EMP002",
+    "timestamp": "2026-08-14T12:59:05.165254+00:00",
+    "prediction": "Suspicious",
+    "threat_type": "Suspicious Behaviour",
+    "confidence": 0.5915,
+    "risk_score": 64,
+    "severity": "Medium",
+    "reasons": [
+      "3 failed login attempts",
+      "Activity occurred outside normal working hours",
+      "New or multiple IP addresses observed",
+      "Activity volume is above the expected baseline",
+      "Isolation Forest marked this behaviour as anomalous"
+    ],
+    "source": "Activity Provider",
+    "processed_at": "2026-08-14T12:59:05.165254+00:00",
+    "anomaly_detected": true
+  },
+  {
+    "test_case": "Brute force",
+    "event_id": "3264d907-3aa6-4e29-bf90-374e32e57e60",
+    "user_id": "EMP003",
+    "timestamp": "2026-08-14T12:59:05.265900+00:00",
+    "prediction": "Threat",
+    "threat_type": "Brute Force Attack",
+    "confidence": 0.6951,
+    "risk_score": 100,
+    "severity": "Critical",
+    "reasons": [
+      "28 failed login attempts",
+      "Activity occurred outside normal working hours",
+      "New or multiple IP addresses observed",
+      "Activity volume is above the expected baseline",
+      "Isolation Forest marked this behaviour as anomalous"
+    ],
+    "source": "Activity Provider",
+    "processed_at": "2026-08-14T12:59:05.265900+00:00",
+    "anomaly_detected": true
+  },
+  {
+    "test_case": "Normal work activity",
+    "event_id": "c79e3444-43bd-48dc-89ee-17ba9c631d5a",
+    "user_id": "EMP004",
+    "timestamp": "2026-08-14T12:59:05.363868+00:00",
+    "prediction": "Normal",
+    "threat_type": "Normal Behaviour",
+    "confidence": 0.9028,
+    "risk_score": 23,
+    "severity": "Low",
+    "reasons": [
+      "Behaviour is consistent with the learned normal baseline"
+    ],
+    "source": "Activity Provider",
+    "processed_at": "2026-08-14T12:59:05.363868+00:00",
+    "anomaly_detected": false
+  },
+  {
+    "test_case": "Possible exfiltration",
+    "event_id": "78261e76-af60-41bc-b391-2d0b6f419e31",
+    "user_id": "EMP005",
+    "timestamp": "2026-08-14T12:59:05.456748+00:00",
+    "prediction": "Threat",
+    "threat_type": "Possible Data Exfiltration",
+    "confidence": 0.6745,
+    "risk_score": 100,
+    "severity": "Critical",
+    "reasons": [
+      "Activity occurred outside normal working hours",
+      "New or multiple IP addresses observed",
+      "Activity volume is above the expected baseline",
+      "High file download volume",
+      "Sensitive resource access observed",
+      "Isolation Forest marked this behaviour as anomalous"
+    ],
+    "source": "Activity Provider",
+    "processed_at": "2026-08-14T12:59:05.456748+00:00",
+    "anomaly_detected": true
+  },
+  {
+    "test_case": "New IP and spike",
+    "event_id": "e672dd1b-1e2a-4257-87ba-6357fab699d2",
+    "user_id": "EMP006",
+    "timestamp": "2026-08-14T12:59:05.549447+00:00",
+    "prediction": "Suspicious",
+    "threat_type": "Suspicious Behaviour",
+    "confidence": 0.5998,
+    "risk_score": 64,
+    "severity": "Medium",
+    "reasons": [
+      "4 failed login attempts",
+      "Activity occurred outside normal working hours",
+      "New or multiple IP addresses observed",
+      "Activity volume is above the expected baseline",
+      "Isolation Forest marked this behaviour as anomalous"
+    ],
+    "source": "Activity Provider",
+    "processed_at": "2026-08-14T12:59:05.549447+00:00",
+    "anomaly_detected": true
+  }
+]

@@ -1,0 +1,8 @@
+steps:
+- name: gcr.io/cloud-builders/docker
+  args: ['build', '-f', 'Dockerfile.employee', '-t', '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/employee-portal:$COMMIT_SHA', '.']
+- name: gcr.io/cloud-builders/docker
+  args: ['build', '-f', 'Dockerfile.admin', '-t', '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/security-operations-admin:$COMMIT_SHA', '.']
+images:
+- '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/employee-portal:$COMMIT_SHA'
+- '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/security-operations-admin:$COMMIT_SHA'

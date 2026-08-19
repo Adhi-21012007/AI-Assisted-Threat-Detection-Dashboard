@@ -1,0 +1,26 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: employee-portal
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/maxScale: "1"
+    spec:
+      containers:
+      - image: REGION-docker.pkg.dev/PROJECT_ID/infosys/employee-portal:TAG
+        ports:
+        - containerPort: 8080
+        env:
+        - name: APP_ENV
+          value: production
+        - name: COMPANY_DATABASE_PATH
+          value: /tmp/company.db
+        - name: UPLOAD_FOLDER
+          value: /tmp/uploads
+        - name: SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: employee-portal-secret
+              key: latest

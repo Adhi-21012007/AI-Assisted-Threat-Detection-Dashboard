@@ -1,0 +1,31 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: security-operations-admin
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/maxScale: "1"
+    spec:
+      containers:
+      - image: REGION-docker.pkg.dev/PROJECT_ID/infosys/security-operations-admin:TAG
+        ports:
+        - containerPort: 8080
+        env:
+        - name: APP_ENV
+          value: production
+        - name: COMPANY_DATABASE_PATH
+          value: /tmp/company.db
+        - name: UPLOAD_FOLDER
+          value: /tmp/uploads
+        - name: SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: admin-portal-secret
+              key: latest
+        - name: SECURITY_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: security-api-key
+              key: latest
