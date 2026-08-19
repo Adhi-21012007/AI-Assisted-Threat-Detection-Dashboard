@@ -1,0 +1,440 @@
+/* ===========================
+   GOOGLE FONT
+=========================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap');
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Manrope',sans-serif;
+}
+
+/* ===========================
+   PAGE
+=========================== */
+
+.login-page{
+    width:100%;
+    min-height:100vh;
+    position:relative;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    overflow-y:auto;
+    overflow-x:hidden;
+
+    padding:40px 20px;
+}
+
+/* ===========================
+   VIDEO
+=========================== */
+
+.background-video{
+    position:absolute;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+
+    filter:
+        brightness(1.25)
+        contrast(1.15)
+        saturate(1.2);
+
+    z-index:-3;
+}
+
+/* ===========================
+   OVERLAY
+=========================== */
+
+.video-overlay{
+
+    position:absolute;
+    inset:0;
+
+    background:
+    linear-gradient(
+        rgba(2,12,27,.25),
+        rgba(2,12,27,.35)
+    );
+
+    z-index:-2;
+
+}
+
+/* ===========================
+   LOGIN CARD
+=========================== */
+
+.login-card{
+
+    width:430px;
+
+    backdrop-filter:blur(18px);
+
+    background:rgba(9,20,40,.45);
+
+    border:1px solid rgba(0,217,255,.25);
+
+    border-radius:28px;
+
+    padding:45px;
+
+    box-shadow:
+    0 0 40px rgba(0,217,255,.20);
+
+    animation:float 5s ease-in-out infinite;
+
+}
+
+@keyframes float{
+
+0%{
+
+transform:translateY(0px);
+
+}
+
+50%{
+
+transform:translateY(-8px);
+
+}
+
+100%{
+
+transform:translateY(0px);
+
+}
+
+}
+
+/* ===========================
+LOGO
+=========================== */
+
+.logo-circle{
+
+width:80px;
+height:80px;
+
+margin:auto;
+
+border-radius:50%;
+
+background:linear-gradient(135deg,#00d9ff,#4cc9f0);
+
+display:flex;
+
+justify-content:center;
+
+align-items:center;
+
+font-size:34px;
+
+color:white;
+
+margin-bottom:20px;
+
+}
+
+/* ===========================
+HEADINGS
+=========================== */
+
+.login-card h1{
+
+font-size:28px;
+
+color:white;
+
+text-align:center;
+
+font-weight:800;
+
+}
+
+.login-card h2{
+
+font-size:16px;
+
+margin-top:10px;
+
+text-align:center;
+
+color:#6ddcff;
+
+font-weight:500;
+
+}
+
+.subtitle{
+
+text-align:center;
+
+margin-top:12px;
+
+color:#d6e7ff;
+
+}
+
+/* ===========================
+INPUTS
+=========================== */
+
+.input-group{
+
+margin-top:25px;
+
+}
+
+.input-group label{
+
+display:block;
+
+margin-bottom:8px;
+
+color:white;
+
+font-size:15px;
+
+}
+
+.input-group input{
+
+width:100%;
+
+padding:15px;
+
+border-radius:14px;
+
+border:none;
+
+outline:none;
+
+background:rgba(255,255,255,.12);
+
+color:white;
+
+font-size:15px;
+
+}
+
+.input-group input::placeholder{
+
+color:#d5d5d5;
+
+}
+
+/* ===========================
+PASSWORD
+=========================== */
+
+.password-box{
+
+display:flex;
+
+align-items:center;
+
+background:rgba(255,255,255,.12);
+
+border-radius:14px;
+
+padding-right:10px;
+
+}
+
+.password-box input{
+
+background:none;
+
+flex:1;
+
+}
+
+.eye-btn{
+
+background:none;
+
+border:none;
+
+cursor:pointer;
+
+color:white;
+
+font-size:18px;
+
+}
+
+/* ===========================
+OPTIONS
+=========================== */
+
+.options{
+
+margin-top:18px;
+
+display:flex;
+
+justify-content:space-between;
+
+align-items:center;
+
+color:white;
+
+font-size:14px;
+
+}
+
+.options label{
+
+display:flex;
+
+gap:8px;
+
+align-items:center;
+
+}
+
+.forgot{
+
+cursor:pointer;
+
+color:#00d9ff;
+
+}
+
+/* ===========================
+LOGIN BUTTON
+=========================== */
+
+.login-btn{
+
+width:100%;
+
+margin-top:30px;
+
+padding:16px;
+
+border:none;
+
+border-radius:15px;
+
+font-size:17px;
+
+font-weight:700;
+
+cursor:pointer;
+
+background:linear-gradient(135deg,#00d9ff,#0077ff);
+
+color:white;
+
+transition:.35s;
+
+}
+
+.login-btn:hover{
+
+transform:translateY(-3px);
+
+box-shadow:0 0 25px #00d9ff;
+
+}
+
+/* ===========================
+SIGNUP
+=========================== */
+
+.signup-btn{
+
+width:100%;
+
+margin-top:15px;
+
+padding:15px;
+
+border-radius:15px;
+
+background:none;
+
+border:1px solid rgba(255,255,255,.35);
+
+color:white;
+
+cursor:pointer;
+
+transition:.35s;
+
+}
+
+.signup-btn:hover{
+
+background:rgba(255,255,255,.12);
+
+}
+
+/* ===========================
+DIVIDER
+=========================== */
+
+.divider{
+
+margin-top:30px;
+
+height:1px;
+
+background:rgba(255,255,255,.20);
+
+}
+
+/* ===========================
+POWERED
+=========================== */
+
+.powered{
+
+margin-top:18px;
+
+text-align:center;
+
+color:#d0d0d0;
+
+font-size:13px;
+
+}
+
+.tech-stack{
+
+margin-top:10px;
+
+display:flex;
+
+justify-content:center;
+
+gap:15px;
+
+flex-wrap:wrap;
+
+}
+
+.tech-stack span{
+
+background:rgba(255,255,255,.10);
+
+padding:8px 14px;
+
+border-radius:50px;
+
+font-size:13px;
+
+color:#7ee8ff;
+
+border:1px solid rgba(126,232,255,.20);
+
+}
